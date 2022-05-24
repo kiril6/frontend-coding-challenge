@@ -5,10 +5,10 @@
       <span alt="Loading results" title="Loading more results, please wait..."></span>
     </div>
     <div class="gallery__holder wow fadeIn" :style="[busy ? {opacity: 0.3} : {opacity: 1}]" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="limit" data-wow-delay="0.5s">
-      <div v-for="picture in 100" :key="picture.id" class="gallery__holder__item">
-
+      <div v-for="picture in pictures" :key="picture.id" @click="pictureOpen(picture.img_src)" class="gallery__holder__item" :style="{'background-image':'url(' + picture.img_src + ')'}">
+        <span v-text="'#' + picture.id"></span>
       </div>
-
+      <span> {{ errorMessage }}</span>
       <div v-show="resultsComplete" class="gallery__holder__results-complete"><span v-text="resutlsCompleteText" class="wow flipInY" data-wow-delay="0.3s"></span></div>
     </div>
   </div>
@@ -18,7 +18,6 @@
 import axios from "axios";
 import WOW from 'wowjs';
 const infiniteScroll = require('vue-infinite-scroll');
-const api = 'https://localhost:3000';
 
 export default {
   name: "Gallery",
@@ -27,19 +26,35 @@ export default {
     return {
       pictures: [],
       totalResults: null,
-      limit: 10,
+      limit: 5,
       busy: false,
       resultsComplete: false,
-      resutlsCompleteText: 'no more results'
+      resutlsCompleteText: 'no more results',
+      errorMessage: ''
     }
 	},
   props: {
     title: String,
+    roverType: {
+      type: String,
+      default: '',
+      required: true
+    },
+  },
+
+  watch: { 
+    roverType: function(newVal, oldVal) {
+      if(oldVal !== newVal) {
+        this.loadMore();
+      }
+    }
   },
  
   methods: {
 		loadMore() {
-
+      if(this.roverType === '') {
+        return;
+      }
       if(this.pictures.length == this.totalResults) {
         this.busy = false;
         this.resultsComplete = true;
@@ -48,23 +63,25 @@ export default {
 			
 			// Sets the application state to "busy".
 			this.busy = true;
+      const api = `https://api.nasa.gov/mars-photos/api/v1/rovers/${this.roverType}/photos?sol=1000&page=1&api_key=DEMO_KEY`;
 			
 			// Sends a get request to the API endpoint.
 			axios.get(api).then(response => {
-        this.totalResults = response.data.length;
-				const append = response.data.slice(
+        this.totalResults = response.data.photos.length;
+        console.log(response.data.photos)
+				const append = response.data.photos.slice(
 					this.pictures.length,
 					this.pictures.length + this.limit
 				);
 
 				this.pictures = this.pictures.concat(append);
 				this.busy = false;
-			})
-		}
+			}).catch((err) => this.errorMessage = err, this.busy = false)
+		},
+    pictureOpen(source) {
+      window.open(source);
+    }
 	},
-  created() {
-    this.loadMore();
-  },
   mounted(){
     let wow = new WOW.WOW({
       boxClass: 'wow',
@@ -148,7 +165,14 @@ $coral: coral;
     padding: 16px 0 0 10px;
     min-width: 342px;
 
+    span:empty {
+      display: none;
+    }
+
     &__item {
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
       height: 80px;
       width: 100%;
       max-width: 140px;
@@ -163,10 +187,40 @@ $coral: coral;
       margin: 0 20px 20px 0;
       border-radius: 25px;
       transition: all .3s linear;
+      span {
+        visibility: hidden;
+      }
       &:hover {
         outline: 1px solid $lightGray;
         box-shadow: 0px 10px 5px 5px rgba(86, 86, 86, 0.75);
         transform: skew(1deg);
+        position: relative;
+        cursor: pointer;
+
+        span {
+          position: absolute;
+          bottom: 8px;
+          right: 8px;
+          border-radius: 5px;
+          padding: 0 4px;
+          font-weight: bold;
+          font-size: 0.8em;
+          background-color: rgba(#2c3e50, 0.7);
+          color: $lightGray;
+          visibility: visible;
+        }
+ 
+        &:after {
+          position: absolute;
+          top: 10px;
+          left: 0;
+          border-top-left-radius: 8px;
+          border-bottom-right-radius: 8px;
+          font-weight: bold;
+          background-color: rgba($lightGray, 0.7);
+          padding: 0 10px 0 10px;
+          content: 'click on image to view'
+        }
       }
       @keyframes spin {
         0% { transform: rotate(0deg); }

@@ -1,9 +1,14 @@
 <template>
   <div id="app">
     <aside id="sidebar">
-      
+      <select @change="onChange($event)">
+        <option selected disabled hidden>{{ roverSelectionTitle }}</option>
+        <option v-for="(rover, index) in rovers" :key="index" :value="rover">
+          {{ rover}}
+        </option>
+      </select>
     </aside>
-    <Gallery title="The M -- rs Files" />
+    <Gallery title="The M -- rs Files" :roverType="selected"/>
   </div>
 </template>
 
@@ -15,6 +20,18 @@ export default {
   components: {
     Gallery,
   },
+  data() {
+    return {
+      selected: '',
+      roverSelectionTitle: 'Choose a Rover:',
+      rovers: ['curiocity', 'opportunity', 'spirit']
+    }
+  },
+  methods: { 
+    onChange(event) {
+      this.selected = event.target.value;
+    } 
+  }
 };
 </script>
 
@@ -22,8 +39,17 @@ export default {
 $coral: coral;
 $fontColor: #2c3e50;
 
+* {
+  outline: 0;
+}
+
 html {
   overflow: hidden;
+}
+
+select {
+  height: 30px;
+  padding: 0 8px;
 }
 
 body {
