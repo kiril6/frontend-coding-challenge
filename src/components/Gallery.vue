@@ -40,7 +40,7 @@
 <script>
 import axios from "axios";
 import WOW from "wowjs";
-const infiniteScroll = require("vue-infinite-scroll");
+import infiniteScroll from "vue-infinite-scroll";
 
 export default {
   name: "Gallery",
