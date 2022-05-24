@@ -4,11 +4,11 @@
       <select @change="onChange($event)">
         <option selected disabled hidden>{{ roverSelectionTitle }}</option>
         <option v-for="(rover, index) in rovers" :key="index" :value="rover">
-          {{ rover}}
+          {{ rover }}
         </option>
       </select>
     </aside>
-    <Gallery title="The M -- rs Files" :roverType="selected"/>
+    <Gallery title="The M -- rs Files" :roverType="selected" />
   </div>
 </template>
 
@@ -22,16 +22,16 @@ export default {
   },
   data() {
     return {
-      selected: '',
-      roverSelectionTitle: 'Choose a Rover:',
-      rovers: ['curiosity', 'opportunity', 'spirit']
-    }
+      selected: "",
+      roverSelectionTitle: "Choose a Rover:",
+      rovers: ["curiosity", "opportunity", "spirit"],
+    };
   },
-  methods: { 
+  methods: {
     onChange(event) {
       this.selected = event.target.value;
-    } 
-  }
+    },
+  },
 };
 </script>
 
@@ -58,24 +58,24 @@ body {
 }
 
 ::-webkit-scrollbar {
-    width: 12px;
+  width: 12px;
 }
- 
+
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
 }
- 
+
 ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 10px;
-    border-radius: 10px;
-    background: $coral; 
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: $coral;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
 ::-webkit-scrollbar-thumb:window-inactive {
-	background: $coral; 
+  background: $coral;
 }
 
 #app {
@@ -99,7 +99,7 @@ body {
     display: flex;
     padding-top: 150px;
     justify-content: center;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
     width: 150px;
     @media screen and (min-width: 769px) {
       width: 250px;

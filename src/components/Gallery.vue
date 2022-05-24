@@ -1,23 +1,46 @@
 <template>
   <div class="gallery">
-    <h1 class="wow bounceIn">{{ title }}<span><img src="../assets/mars-logo.gif"/></span></h1>
+    <h1 class="wow bounceIn">
+      {{ title }}<span><img src="../assets/mars-logo.gif" /></span>
+    </h1>
     <div v-show="busy" class="gallery__loader">
-      <span alt="Loading results" title="Loading more results, please wait..."></span>
+      <span
+        alt="Loading results"
+        title="Loading more results, please wait..."
+      ></span>
     </div>
-    <div class="gallery__holder wow fadeIn" :style="[busy ? {opacity: 0.3} : {opacity: 1}]" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" data-wow-delay="0.5s">
-      <div v-for="(picture, index) in pictures" :key="index" @click="pictureOpen(picture.img_src)" class="gallery__holder__item" :style="{'background-image':'url(' + picture.img_src + ')'}">
+    <div
+      class="gallery__holder wow fadeIn"
+      :style="[busy ? { opacity: 0.3 } : { opacity: 1 }]"
+      v-infinite-scroll="loadMore"
+      infinite-scroll-disabled="busy"
+      data-wow-delay="0.5s"
+    >
+      <div
+        v-for="(picture, index) in pictures"
+        :key="index"
+        @click="pictureOpen(picture.img_src)"
+        class="gallery__holder__item"
+        :style="{ 'background-image': 'url(' + picture.img_src + ')' }"
+      >
         <span v-text="'#' + picture.id"></span>
       </div>
       <span> {{ errorMessage }}</span>
-      <div v-show="resultsEnd" class="gallery__holder__results-complete"><span v-text="resultsEndText" class="wow flipInY" data-wow-delay="0.3s"></span></div>
+      <div v-show="resultsEnd" class="gallery__holder__results-complete">
+        <span
+          v-text="resultsEndText"
+          class="wow flipInY"
+          data-wow-delay="0.3s"
+        ></span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import WOW from 'wowjs';
-const infiniteScroll = require('vue-infinite-scroll');
+import WOW from "wowjs";
+const infiniteScroll = require("vue-infinite-scroll");
 
 export default {
   name: "Gallery",
@@ -29,75 +52,78 @@ export default {
       page: 1,
       busy: false,
       resultsEnd: false,
-      resultsEndText: 'reached end of results',
-      errorMessage: ''
-    }
-	},
+      resultsEndText: "reached end of results",
+      errorMessage: "",
+    };
+  },
   props: {
     title: String,
     roverType: {
       type: String,
-      default: '',
-      required: true
+      default: "",
+      required: true,
     },
   },
 
-  watch: { 
-    roverType: function(newVal, oldVal) {
-      if(oldVal !== newVal) {        
+  watch: {
+    roverType: function (newVal, oldVal) {
+      if (oldVal !== newVal) {
         this.pictures = [];
         this.page = 1;
         this.resultsEnd = false;
         this.loadMore();
       }
-    }
+    },
   },
- 
+
   methods: {
-		loadMore() {
+    loadMore() {
       // If no dropdown selection is done no request will be triggered.
-      if(this.roverType === '') {
+      if (this.roverType === "") {
         return;
       }
 
       // If error message from before will be cleared
-      this.errorMessage = '';
+      this.errorMessage = "";
       // Starts the loader
       this.busy = true;
 
-			const api_key = 'CtxPWweZfBxecIanMNKrxfSBpOsGS0yWtBOyk3rE';
+      const api_key = "CtxPWweZfBxecIanMNKrxfSBpOsGS0yWtBOyk3rE";
       let api = `https://api.nasa.gov/mars-photos/api/v1/rovers/${this.roverType}/photos?sol=1000&page=${this.page}&api_key=${api_key}`;
-			
-			// Sends a get request to the API endpoint.
-			axios.get(api).then(response => {
-        this.totalResults = response.data.photos.length;
-				this.pictures = this.pictures.concat(response.data.photos);
-        // if request passes its appending next page number for the next call
-        this.page++;
-        this.busy = false;
-        // If not received length of data from page
-        if(this.totalResults < 1) {
-          this.resultsEnd = true;
-        }
-			}).catch((err) => this.errorMessage = err, this.busy = false)
-		},
+
+      // Sends a get request to the API endpoint.
+      axios
+        .get(api)
+        .then((response) => {
+          this.totalResults = response.data.photos.length;
+          this.pictures = this.pictures.concat(response.data.photos);
+          // if request passes its appending next page number for the next call
+          this.page++;
+          this.busy = false;
+          // If not received length of data from page
+          if (this.totalResults < 1) {
+            this.resultsEnd = true;
+          }
+        })
+        .catch((err) => (this.errorMessage = err), (this.busy = false));
+    },
 
     // Opens image on click in new tab
     pictureOpen(source) {
       window.open(source);
-    }
-	},
-  mounted(){
+    },
+  },
+  mounted() {
     // Css animation library
     let wow = new WOW.WOW({
-      boxClass: 'wow',
-      animateClass: 'animated',
+      boxClass: "wow",
+      animateClass: "animated",
       offset: 0,
       mobile: true,
-      live: true
+      live: true,
     });
     wow.init();
-  }
+  },
 };
 </script>
 
@@ -135,10 +161,10 @@ $coral: coral;
       position: absolute;
       margin-left: -28px;
       img {
-        height:35px;
+        height: 35px;
         width: auto;
         @media screen and (min-width: 769px) {
-          height:40px;
+          height: 40px;
         }
       }
     }
@@ -192,7 +218,7 @@ $coral: coral;
       justify-content: center;
       margin: 0 20px 20px 0;
       border-radius: 25px;
-      transition: all .3s linear;
+      transition: all 0.3s linear;
       span {
         visibility: hidden;
       }
@@ -215,7 +241,7 @@ $coral: coral;
           color: $lightGray;
           visibility: visible;
         }
- 
+
         &:after {
           position: absolute;
           top: 10px;
@@ -225,12 +251,16 @@ $coral: coral;
           font-weight: bold;
           background-color: rgba($lightGray, 0.7);
           padding: 0 10px 0 10px;
-          content: 'click on image to view'
+          content: "click on image to view";
         }
       }
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
     }
     &__results-complete {

@@ -1,6 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
-import 'wowjs/css/libs/animate.css'
+import "wowjs/css/libs/animate.css";
 
 Vue.config.productionTip = false;
 
