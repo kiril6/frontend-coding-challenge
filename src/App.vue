@@ -24,7 +24,7 @@ export default {
     return {
       selected: '',
       roverSelectionTitle: 'Choose a Rover:',
-      rovers: ['curiocity', 'opportunity', 'spirit']
+      rovers: ['curiosity', 'opportunity', 'spirit']
     }
   },
   methods: { 

@@ -4,12 +4,12 @@
     <div v-show="busy" class="gallery__loader">
       <span alt="Loading results" title="Loading more results, please wait..."></span>
     </div>
-    <div class="gallery__holder wow fadeIn" :style="[busy ? {opacity: 0.3} : {opacity: 1}]" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="limit" data-wow-delay="0.5s">
-      <div v-for="picture in pictures" :key="picture.id" @click="pictureOpen(picture.img_src)" class="gallery__holder__item" :style="{'background-image':'url(' + picture.img_src + ')'}">
+    <div class="gallery__holder wow fadeIn" :style="[busy ? {opacity: 0.3} : {opacity: 1}]" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" data-wow-delay="0.5s">
+      <div v-for="(picture, index) in pictures" :key="index" @click="pictureOpen(picture.img_src)" class="gallery__holder__item" :style="{'background-image':'url(' + picture.img_src + ')'}">
         <span v-text="'#' + picture.id"></span>
       </div>
       <span> {{ errorMessage }}</span>
-      <div v-show="resultsComplete" class="gallery__holder__results-complete"><span v-text="resutlsCompleteText" class="wow flipInY" data-wow-delay="0.3s"></span></div>
+      <div v-show="resultsEnd" class="gallery__holder__results-complete"><span v-text="resultsEndText" class="wow flipInY" data-wow-delay="0.3s"></span></div>
     </div>
   </div>
 </template>
@@ -26,10 +26,10 @@ export default {
     return {
       pictures: [],
       totalResults: null,
-      limit: 5,
+      page: 1,
       busy: false,
-      resultsComplete: false,
-      resutlsCompleteText: 'no more results',
+      resultsEnd: false,
+      resultsEndText: 'reached end of results',
       errorMessage: ''
     }
 	},
@@ -44,7 +44,10 @@ export default {
 
   watch: { 
     roverType: function(newVal, oldVal) {
-      if(oldVal !== newVal) {
+      if(oldVal !== newVal) {        
+        this.pictures = [];
+        this.page = 1;
+        this.resultsEnd = false;
         this.loadMore();
       }
     }
@@ -52,37 +55,40 @@ export default {
  
   methods: {
 		loadMore() {
+      // If no dropdown selection is done no request will be triggered.
       if(this.roverType === '') {
         return;
       }
-      if(this.pictures.length == this.totalResults) {
-        this.busy = false;
-        this.resultsComplete = true;
-        return
-      }
-			
-			// Sets the application state to "busy".
-			this.busy = true;
-      const api = `https://api.nasa.gov/mars-photos/api/v1/rovers/${this.roverType}/photos?sol=1000&page=1&api_key=DEMO_KEY`;
+
+      // If error message from before will be cleared
+      this.errorMessage = '';
+      // Starts the loader
+      this.busy = true;
+
+			const api_key = 'CtxPWweZfBxecIanMNKrxfSBpOsGS0yWtBOyk3rE';
+      let api = `https://api.nasa.gov/mars-photos/api/v1/rovers/${this.roverType}/photos?sol=1000&page=${this.page}&api_key=${api_key}`;
 			
 			// Sends a get request to the API endpoint.
 			axios.get(api).then(response => {
         this.totalResults = response.data.photos.length;
-        console.log(response.data.photos)
-				const append = response.data.photos.slice(
-					this.pictures.length,
-					this.pictures.length + this.limit
-				);
-
-				this.pictures = this.pictures.concat(append);
-				this.busy = false;
+				this.pictures = this.pictures.concat(response.data.photos);
+        // if request passes its appending next page number for the next call
+        this.page++;
+        this.busy = false;
+        // If not received length of data from page
+        if(this.totalResults < 1) {
+          this.resultsEnd = true;
+        }
 			}).catch((err) => this.errorMessage = err, this.busy = false)
 		},
+
+    // Opens image on click in new tab
     pictureOpen(source) {
       window.open(source);
     }
 	},
   mounted(){
+    // Css animation library
     let wow = new WOW.WOW({
       boxClass: 'wow',
       animateClass: 'animated',
@@ -229,9 +235,11 @@ $coral: coral;
     }
     &__results-complete {
       font-weight: bold;
+      height: 20px;
       width: 100%;
       display: flex;
       justify-content: center;
+      align-self: self-end;
       background: $lightGray;
       border-bottom: 4px solid $coral;
     }
