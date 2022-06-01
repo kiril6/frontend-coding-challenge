@@ -1,4 +1,4 @@
-# frontend-coding-challenge (NASA API for rovers pictures taken on Mars)
+# vue-nasa-rover-images-infinite-scroll (NASA API for rovers pictures taken on Mars - with infinite scroll to fetch new images)
 
 Accessing url: https://kiril6.github.io/frontend-coding-challenge/
 
