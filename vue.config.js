@@ -1,3 +1,3 @@
 module.exports = {
-    publicPath: process.env.NODE_ENV === 'production' ? '/frontend-coding-challenge' : '/',
+    publicPath: process.env.NODE_ENV === 'production' ? '/vue-nasa-rover-images-infinite-scroll' : '/',
 };  
